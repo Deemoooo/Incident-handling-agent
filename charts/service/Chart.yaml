@@ -1,0 +1,5 @@
+apiVersion: v2
+name: service
+version: 0.1.0
+appVersion: v1
+description: A service for the triage lab

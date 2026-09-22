@@ -1,0 +1,2 @@
+serviceName: gateway
+downstreamUrl: http://order

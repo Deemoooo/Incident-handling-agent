@@ -1,0 +1,22 @@
+prometheus:
+  prometheusSpec:
+    # 让 Prometheus 认所有 namespace 里的 ServiceMonitor/PodMonitor，
+    # 不然你自己应用的 metrics 抓不到
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    # 同理，Step 2 你自己写的告警规则（PrometheusRule）才会被加载
+    ruleSelectorNilUsesHelmValues: false
+    retention: 2d
+
+# kind 里这几个组件的 metrics 只监听 127.0.0.1，抓不到，直接关掉
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeProxy:
+  enabled: false
+
+grafana:
+  adminPassword: admin # 本地实验用，随便设
