@@ -1,0 +1,39 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: demo-alerts
+  namespace: monitoring
+spec:
+  groups:
+    - name: demo-services # alert group name
+      rules:
+        - alert: HighErrorRate
+          expr: |
+            sum by (service) (rate(http_requests_total{route="/api/work", status=~"5.."}[1m]))
+            /
+            sum by (service) (rate(http_requests_total{route="/api/work"}[1m]))
+            > 0.05
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.service }} error rate is high"
+            description: "{{ $labels.service }} error rate is {{ $value | humanizePercentage }} over the last minute"
+        - alert: HighLatency
+          expr: |
+            histogram_quantile(0.95, sum by (service, le) (rate(http_request_duration_seconds_bucket{route="/api/work"}[1m])))
+            > 1
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.service }} latency is high"
+            description: "{{ $labels.service }} p95 latency is {{ $value }} over the last minute"
+        - alert: PodRestarting
+          expr: |
+            increase(kube_pod_container_status_restarts_total{namespace="demo"}[5m]) > 0
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.container }} pod restarts is high"
+            description: '{{ $labels.pod }} restarted is {{ $value | printf "%.0f" }} times over the last 5 minutes'
