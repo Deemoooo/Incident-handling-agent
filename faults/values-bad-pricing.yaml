@@ -1,0 +1,3 @@
+extraEnv:
+  - name: FEATURE_NEW_PRICING
+    value: "true"

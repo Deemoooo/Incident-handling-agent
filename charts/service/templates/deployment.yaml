@@ -28,6 +28,9 @@ spec:
               value: {{ .Values.serviceName | quote }}
             - name: DOWNSTREAM_URL
               value: {{ .Values.downstreamUrl | quote }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           readinessProbe:
             httpGet:
               path: /ready

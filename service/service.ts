@@ -11,7 +11,7 @@ const DOWNSTREAM_URL = process.env.DOWNSTREAM_URL;
 const PORT = Number(process.env.PORT ?? 8080);
 
 const fault = {
-  errorRate: 0, // 0–1，按这个概率返回 500
+  errorRate: process.env.FEATURE_NEW_PRICING === "true" ? 0.3 : 0,
   latencyMs: 0, // 每个请求额外等待的毫秒数
   leakMbPerSec: 0, // 每秒泄漏多少 MB 内存，0 表示不泄漏
 };
