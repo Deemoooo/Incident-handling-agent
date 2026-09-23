@@ -29,7 +29,10 @@ kubectl create configmap demo-services-dashboard -n monitoring \
   --dry-run=client -o yaml | kubectl apply -f - --context "${CONTEXT}"
 kubectl label configmap demo-services-dashboard -n monitoring \
   grafana_dashboard=1 --overwrite --context "${CONTEXT}"
-kubectl apply -f monitoring/alert-rules.yaml
+kubectl apply -f monitoring/alert-rules.yaml --context "${CONTEXT}"
+
+# deploy incident agent service account
+kubectl apply -f agent/rbac.yaml --context "${CONTEXT}"
 
 # deploy actual services
 echo "==> Deploying services"
