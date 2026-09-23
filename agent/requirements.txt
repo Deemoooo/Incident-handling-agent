@@ -1,2 +1,4 @@
 requests
 kubernetes
+anthropic
+python-dotenv
