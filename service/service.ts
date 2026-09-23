@@ -24,7 +24,7 @@ const httpRequestsTotal = new Counter({
 
 const httpRequestsDuration = new Histogram({
   name: "http_request_duration_seconds",
-  help: "Total number of HTTP request seconds",
+  help: "HTTP request duration in seconds",
   buckets: [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10],
   labelNames: ["method", "route", "status"],
 });
@@ -54,6 +54,19 @@ app.use((req, res, next) => {
   const record = (status: number) => {
     if (recorded) return;
     recorded = true;
+    const route = req.route?.path ?? "unmatched";
+    if (route === "/api/work") {
+      console.log(
+        JSON.stringify({
+          method: req.method,
+          route: route,
+          status: status,
+          duration_ms: Date.now() - start,
+          service: SERVICE_NAME,
+          level: status >= 400 ? "error" : "info",
+        })
+      );
+    }
     recordMetrics(start, req, status);
   };
   res.on("finish", () => record(res.statusCode));
@@ -103,14 +116,6 @@ app.post("/admin/fault", (req, res) => {
       }, 1000);
     }
   }
-  console.log(
-    JSON.stringify({
-      level: "warn",
-      service: SERVICE_NAME,
-      msg: "fault updated",
-      fault,
-    })
-  );
   return res.json(fault);
 });
 
@@ -140,6 +145,15 @@ app.get("/api/work", async (_req, res) => {
       signal: AbortSignal.timeout(2000),
     });
     if (!response.ok) {
+      console.log(
+        JSON.stringify({
+          level: "error",
+          service: SERVICE_NAME,
+          msg: "downstream returned error",
+          downstream_url: DOWNSTREAM_URL,
+          downstream_status: response.status,
+        })
+      );
       res.status(502).json({
         service: SERVICE_NAME,
         downstream_status: response.status,
@@ -151,10 +165,25 @@ app.get("/api/work", async (_req, res) => {
     res.json({ service: SERVICE_NAME, downstream: data });
   } catch (error) {
     if (error instanceof Error && error.name === "TimeoutError") {
+      console.log(
+        JSON.stringify({
+          level: "error",
+          service: SERVICE_NAME,
+          msg: "downstream timeout",
+        })
+      );
       res
         .status(504)
         .json({ service: SERVICE_NAME, error: "downstream_timeout" });
     } else {
+      console.log(
+        JSON.stringify({
+          level: "error",
+          service: SERVICE_NAME,
+          msg: "downstream unavailable",
+          downstream_url: DOWNSTREAM_URL,
+        })
+      );
       res.status(502).json({
         service: SERVICE_NAME,
         error: "downstream_unavailable",
@@ -185,12 +214,31 @@ const server = app.listen(PORT, () => {
 });
 
 function shutdown(signal: string) {
+  console.log(
+    JSON.stringify({
+      level: "warn",
+      service: SERVICE_NAME,
+      msg: `received ${signal}, shutting down`,
+    })
+  );
   server.close(() => {
-    console.log(`${SERVICE_NAME} is shutting down`);
+    console.log(
+      JSON.stringify({
+        level: "info",
+        service: SERVICE_NAME,
+        msg: "shutdown complete",
+      })
+    );
     process.exit(0);
   });
   setTimeout(() => {
-    console.log(`${SERVICE_NAME} is shutting down`);
+    console.log(
+      JSON.stringify({
+        level: "error",
+        service: SERVICE_NAME,
+        msg: "shutdown timed out, forcing exit",
+      })
+    );
     process.exit(1);
   }, 10000);
 }
