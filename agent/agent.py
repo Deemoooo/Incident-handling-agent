@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from dotenv import load_dotenv
 from anthropic import Anthropic
 from tools import TOOLS, TOOL_FUNCTIONS
@@ -38,8 +39,17 @@ End your investigation with a report in exactly this format:
 
 MAX_STEPS = 10
 
-def run_agent(alert: str) -> str:
+def run_agent(alert: str) -> dict:
     messages = [{"role": "user", "content": f"Alert fired:\n{alert}"}]
+
+    input_tokens = 0
+    output_tokens = 0
+    tool_calls = []
+    total_steps = 0
+    summary = ""
+    current_time = datetime.now()
+    duration_sec = 0
+    completed = False
 
     for step in range(MAX_STEPS):
         print(f"\n===== Step {step + 1} =====")
@@ -52,6 +62,9 @@ def run_agent(alert: str) -> str:
             messages=messages,
         )
 
+        input_tokens += response.usage.input_tokens
+        output_tokens += response.usage.output_tokens
+
         # 把模型的回复原样加进历史
         messages.append({"role": "assistant", "content": response.content})
 
@@ -62,7 +75,10 @@ def run_agent(alert: str) -> str:
 
         # 没有要调用的 tool，说明给出结论了
         if response.stop_reason != "tool_use":
-            return "".join(b.text for b in response.content if b.type == "text")
+            summary = "".join(b.text for b in response.content if b.type == "text")
+            total_steps = step + 1
+            completed = True
+            break
 
         # 执行所有 tool_use
         tool_results = []
@@ -70,6 +86,7 @@ def run_agent(alert: str) -> str:
             if block.type != "tool_use":
                 continue
             print(f"[tool] {block.name} {block.input}")
+            tool_calls.append(block.name)
             try:
                 result = TOOL_FUNCTIONS[block.name](**block.input)
             except Exception as e:
@@ -82,8 +99,21 @@ def run_agent(alert: str) -> str:
             })
 
         messages.append({"role": "user", "content": tool_results})
+    
+    total_steps = total_steps or MAX_STEPS
+    duration_sec = (datetime.now() - current_time).total_seconds()
+    if not summary:
+        summary = "No results after max steps"
 
-    return "No results after max steps"
+    return {
+        "summary": summary,
+        "total_steps": total_steps,
+        "duration_sec": duration_sec,
+        "tool_calls": tool_calls,
+        "input_tokens": input_tokens,
+        "output_tokens": output_tokens,
+        "completed": completed,
+    }
 
 if __name__ == "__main__":
     alert = "HighErrorRate: gateway error rate is 100% over the last minute (severity: critical)"

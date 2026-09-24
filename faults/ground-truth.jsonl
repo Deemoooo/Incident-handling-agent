@@ -5,3 +5,14 @@
 {"scenario":"memory-leak","target":"order","root_cause":"memory leak in order causing OOMKilled restarts","injected_at":"2026-09-23T15:12:03Z"}
 {"scenario":"bad-deploy","target":"order","root_cause":"bad deploy: new order release enabled FEATURE_NEW_PRICING, causing errors","injected_at":"2026-09-23T15:19:50Z"}
 {"scenario":"misconfig-loop","target":"inventory","root_cause":"misconfigured DOWNSTREAM_URL: inventory calls itself in a loop","injected_at":"2026-09-23T15:29:43Z"}
+{"scenario":"memory-leak","target":"order","root_cause":"memory leak in order causing OOMKilled restarts","injected_at":"2026-09-24T05:57:20Z"}
+{"scenario":"memory-leak","target":"order","root_cause":"memory leak in order causing OOMKilled restarts","injected_at":"2026-09-24T06:18:49Z"}
+{"scenario":"memory-leak","target":"order","root_cause":"memory leak in order causing OOMKilled restarts","injected_at":"2026-09-24T06:28:08Z"}
+{"scenario":"memory-leak","target":"order","root_cause":"memory leak in order causing OOMKilled restarts","injected_at":"2026-09-24T06:32:32Z"}
+{"scenario":"memory-leak","target":"order","root_cause":"memory leak in order causing OOMKilled restarts","injected_at":"2026-09-24T06:36:28Z"}
+{"scenario":"slow-dependency","target":"inventory","root_cause":"inventory latency causing upstream timeouts","injected_at":"2026-09-24T06:40:24Z"}
+{"scenario":"slow-dependency","target":"inventory","root_cause":"inventory latency causing upstream timeouts","injected_at":"2026-09-24T06:44:18Z"}
+{"scenario":"bad-deploy","target":"order","root_cause":"bad deploy: new order release enabled FEATURE_NEW_PRICING, causing errors","injected_at":"2026-09-24T06:48:18Z"}
+{"scenario":"bad-deploy","target":"order","root_cause":"bad deploy: new order release enabled FEATURE_NEW_PRICING, causing errors","injected_at":"2026-09-24T06:52:35Z"}
+{"scenario":"misconfig-loop","target":"inventory","root_cause":"misconfigured DOWNSTREAM_URL: inventory calls itself in a loop","injected_at":"2026-09-24T06:56:51Z"}
+{"scenario":"misconfig-loop","target":"inventory","root_cause":"misconfigured DOWNSTREAM_URL: inventory calls itself in a loop","injected_at":"2026-09-24T07:01:02Z"}
