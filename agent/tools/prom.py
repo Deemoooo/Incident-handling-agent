@@ -13,10 +13,22 @@ def query_prometheus(query_string: str):
             return {"error": data["error"]}
         else:
             results = data["data"]["result"]
-            return {"result": [
-                {"labels": r["metric"], "value": float(r["value"][1])}
-                for r in results
-            ]}
+            MAX_SERIES = 20
+            truncated = len(results) > MAX_SERIES
+            results = results[:MAX_SERIES]
+
+            output = {
+                "result": [
+                    {"labels": r["metric"], "value": float(r["value"][1])}
+                    for r in results
+                ]
+            }
+            if truncated:
+                output["note"] = (
+                    f"Too many series returned, showing first {MAX_SERIES}. "
+                    "Use sum by (...) to aggregate."
+                )
+            return output
     except Exception as e:
         return {"error": str(e)}
 

@@ -13,6 +13,7 @@ PROMETHEUS_QUERY_SCHEMA = {
         - Memory per container: sum by (container) (container_memory_working_set_bytes{namespace="demo", container!=""})
 
         Notes:
+        - Always aggregate with sum by (...). Raw queries return many labels that waste context.
         - Always filter by route="/api/work" for business traffic; otherwise health probes and metrics scrapes are included.
         - status="499" means the client gave up waiting — a sign this service is slow, not erroring.
         - Services form a chain: gateway -> order -> inventory.""",

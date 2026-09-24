@@ -1,3 +1,7 @@
 {"scenario":"memory-leak","target":"order","root_cause":"memory leak in order causing OOMKilled restarts","injected_at":"2026-09-22T09:22:25Z"}
 {"scenario":"slow-dependency","target":"inventory","root_cause":"inventory latency causing upstream timeouts","injected_at":"2026-09-22T09:34:26Z"}
 {"scenario":"memory-leak","target":"order","root_cause":"memory leak in order causing OOMKilled restarts","injected_at":"2026-09-23T08:40:55Z"}
+{"scenario":"slow-dependency","target":"inventory","root_cause":"inventory latency causing upstream timeouts","injected_at":"2026-09-23T14:55:28Z"}
+{"scenario":"memory-leak","target":"order","root_cause":"memory leak in order causing OOMKilled restarts","injected_at":"2026-09-23T15:12:03Z"}
+{"scenario":"bad-deploy","target":"order","root_cause":"bad deploy: new order release enabled FEATURE_NEW_PRICING, causing errors","injected_at":"2026-09-23T15:19:50Z"}
+{"scenario":"misconfig-loop","target":"inventory","root_cause":"misconfigured DOWNSTREAM_URL: inventory calls itself in a loop","injected_at":"2026-09-23T15:29:43Z"}

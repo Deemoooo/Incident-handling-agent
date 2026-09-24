@@ -130,7 +130,7 @@ app.get("/api/work", async (_req, res) => {
       JSON.stringify({
         level: "error",
         service: SERVICE_NAME,
-        msg: "failed to process request: connection reset",
+        msg: "request handler failed",
       })
     );
     res.status(500).json({ service: SERVICE_NAME, error: "internal_error" });
